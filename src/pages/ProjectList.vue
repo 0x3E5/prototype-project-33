@@ -223,6 +223,7 @@ export default {
   }
   /* 主体内容样式 */
   .project-list-wrap > .el-main > main{
+    overflow: auto;
     height: calc(100% - 80px);
     display: flex;
     justify-content: space-between;

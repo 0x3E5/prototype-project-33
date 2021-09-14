@@ -4,15 +4,20 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // {
+  //   path: '/',
+  //   name: 'base',
+  //   component: () => import('../pages/Base')
+  // },
   {
     path: '/',
-    name: 'base',
-    component: () => import('../pages/Base')
-  },
-  {
-    path: '/project-list',
     name: 'ProjectList',
     component: () => import('../pages/ProjectList')
+  },
+  {
+    path: '/page',
+    name: 'PageCanvas',
+    component: () => import('../pages/PageCanvas')
   },
 ]
 

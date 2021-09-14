@@ -31,9 +31,7 @@
       <div class="page-canvas__layer">
         <dl>
           <dt>图层</dt>
-          <dd class="active">矩形</dd>
-          <dd>圆形</dd>
-          <dd>三角形</dd>
+          <dd v-for="item in layerList" :key="item.attrs.id" :class="{active: item.attrs.id === activeId }" @click="clickLayerEdit(item.attrs.id)">{{ item.attrs.name }}<el-button type="text" icon="el-icon-delete" @click="clickLayerDelete(item.attrs.id)" /></dd>
         </dl>
       </div>
       <!-- 图层结束 -->
@@ -42,68 +40,69 @@
       <!-- canvas 舞台结束 -->
       <!-- 属性开始 -->
       <div class="page-canvas__property">
-        <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="基本">
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456">
-              <template slot="append">X</template>
-            </el-input>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456">
-              <template slot="append">Y</template>
-            </el-input>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456">
-              <template slot="append">W</template>
-            </el-input>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456">
-              <template slot="append">H</template>
-            </el-input>
-          </el-descriptions-item>
-        </el-descriptions>
-        <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="背景色">
-          <el-descriptions-item>
-            <el-color-picker size="small" color-format="hex"></el-color-picker>
-            <p>颜色</p>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456">
-              <template slot="prepend">#</template>
-            </el-input>
-            <p>Hex</p>
-          </el-descriptions-item>
-        </el-descriptions>
-        <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="边框">
-          <el-descriptions-item>
-            <el-color-picker size="small" color-format="rgb" show-alpha></el-color-picker>
-            <p>颜色</p>
+        <template v-if="editFlag">
+          <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="基本">
+            <el-descriptions-item>
+              <el-input size="mini" v-model="currentEditor.attrs.x" @change="updateKonva">
+                <template slot="append">X</template>
+              </el-input>
             </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456" />
-            <p>宽度</p>
-          </el-descriptions-item>
-        </el-descriptions>
-        <el-descriptions :column="4" size="medium" contentClassName="canvas-property__item" :colon="false" title="阴影">
-          <el-descriptions-item>
-            <el-color-picker size="small" color-format="rgb" show-alpha></el-color-picker>
-            <p>颜色</p>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456" />
-            <p>X</p>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456" />
-            <p>Y</p>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <el-input size="mini" :value="123456" />
-            <p>模糊</p>
-          </el-descriptions-item>
-        </el-descriptions>
+            <el-descriptions-item>
+              <el-input size="mini" v-model="currentEditor.attrs.y" @change="updateKonva">
+                <template slot="append">Y</template>
+              </el-input>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini" v-model="currentEditor.attrs.width" @change="updateKonva">
+                <template slot="append">W</template>
+              </el-input>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini" v-model="currentEditor.attrs.height" @change="updateKonva">
+                <template slot="append">H</template>
+              </el-input>
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="背景色">
+            <el-descriptions-item>
+              <el-color-picker size="small" color-format="hex" v-model="currentEditor.attrs.fill" @change="updateKonva"></el-color-picker>
+              <p>颜色</p>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini" v-model="currentEditor.attrs.fill" @change="updateKonva">
+              </el-input>
+              <p>Hex</p>
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="边框">
+            <el-descriptions-item>
+              <el-color-picker size="small" color-format="rgb" show-alpha v-model="currentEditor.attrs.stroke" @change="updateKonva"></el-color-picker>
+              <p>颜色</p>
+              </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini" v-model="currentEditor.attrs.strokeWidth" @change="updateKonva"/>
+              <p>宽度</p>
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions :column="4" size="medium" contentClassName="canvas-property__item" :colon="false" title="阴影">
+            <el-descriptions-item>
+              <el-color-picker size="small" color-format="rgb" show-alpha v-model="currentEditor.attrs.shadowColor" @change="updateKonva"></el-color-picker>
+              <p>颜色</p>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetX" @change="updateKonva" />
+              <p>X</p>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetY" @change="updateKonva" />
+              <p>Y</p>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <el-input size="mini"  v-model="currentEditor.attrs.shadowBlur" @change="updateKonva" />
+              <p>模糊</p>
+            </el-descriptions-item>
+          </el-descriptions>
+        </template>
       </div>
       <!-- 属性结束 -->
     </div>
@@ -116,7 +115,29 @@ export default {
   name: 'PageCanvas',
   data() {
     return {
-      stage: null
+      stage: null,
+      layer: null,
+      editFlag: false,
+      currentEditor: null,
+      activeId: null,
+      layerList: []
+    }
+  },
+  watch:{
+    /**
+     * TODO 影响性能，待优化
+     */
+    stage: {
+      handler(val) {
+        this.layerList = []
+        const layer = val.find('Layer')[0].children
+        layer.forEach(shape => {
+          if (shape.attrs.name !== 'transformer') {
+            this.layerList.push(shape)
+          }
+        })
+      },
+      deep: true
     }
   },
   methods: {
@@ -125,6 +146,8 @@ export default {
       switch (val) {
         case 'save':
           console.log('保存当前页面');
+          console.log(this.stage.toJSON())
+          console.log(this.stage.toDataURL({ pixelRatio: 1 }));
           break;
       }
     },
@@ -133,6 +156,7 @@ export default {
       switch(val) {
         case 'rect':
           console.log('插入矩形');
+          this.createRect()
           break;
         case 'circle':
           console.log('插入圆形');
@@ -164,34 +188,139 @@ export default {
         height: height
       }
     },
+    // 初始化舞台
+    initKonva() {
+      const { width, height } = this.getCanvasElSize()
+      this.stage = new Konva.Stage({
+        container: 'page-canvas',
+        width: width,
+        height: height
+      })
+      this.layer = new Konva.Layer()
+      this.stage.add(this.layer)
+      this.stage.on('click', e => {
+        if (e.target === this.stage) {
+          // 点击空白区域移除编辑状态
+          this.clearEdit()
+        } else {
+          this.setEdit(e.target)
+        }
+        this.layer.draw()
+      })
+      this.stage.on('dblclick', e => {
+        if (e.target !== this.stage) {
+          // 点击空白区域移除编辑状态
+          this.setDelete(e.target)
+        }
+      })
+      window.stage = this.stage
+    },
+    // 设置图形编辑状态
+    setEdit(shape) {
+      if (!shape) return
+      this.clearEdit()
+      this.editFlag = true
+      this.activeId = shape.attrs.id
+      this.currentEditor = shape
+      shape.draggable(true)
+      this.tr = new Konva.Transformer({
+        name:'transformer',
+        rotationSnaps: [0, 90, 180, 270],
+      })
+      this.layer.add(this.tr)
+      this.tr.nodes([shape])
+      // this.layer.draw()
+    },
+    // 清除编辑状态
+    clearEdit() {
+      if (this.tr) {
+        this.stage.find('Transformer')[0].destroy()
+        this.tr = null
+      }
+      if (this.editFlag) {
+        this.currentEditor.draggable(false)
+        this.currentEditor = null
+        this.editFlag = false
+      }
+      this.activeId = null
+    },
+    // 删除图层
+    setDelete(shape) {
+      this.$confirm('确定要删除该图层吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        shape.destroy()
+        this.clearEdit()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        return
+      })
+    },
+    // 点击图层编辑
+    clickLayerEdit(id) {
+      this.setEdit(this.stage.find(`#${id}`)[0])
+    },
+    // 点击图层删除
+    clickLayerDelete(id) {
+      this.$confirm('确定要删除该图层吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.stage.find(`#${id}`)[0].destroy()
+        this.clearEdit()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        return
+      })
+    },
     // 绘制矩形
     createRect() {
-      const layer = new Konva.Layer()
       const rect = new Konva.Rect({
-        id: 'rect',
-        name: 'rect',
-        x: 20,
-        y: 20,
+        id: String(new Date().getTime()),
+        name: '矩形',
+        x: this.stage.width() / 2,
+        y: this.stage.height() / 2,
         width: 100,
         height: 50,
         fill: '#fff',
-        stroke: 'black',
-        strokeWidth: 1
+        stroke: 'rgba(0,0,0,1)',
+        strokeWidth: 1,
+        shadowOffsetX : 0,
+        shadowOffsetY : 0,
+        shadowBlur : 0,
+        shadowColor: 'rgba(0,0,0,0.3)'
       })
-      layer.add(rect)
-      this.stage.add(layer)
+      rect.on('mouseenter', () => {
+        stage.container().style.cursor = 'pointer';
+      });
+
+      rect.on('mouseleave', () => {
+        stage.container().style.cursor = 'default';
+      });
+      this.layer.add(rect).draw()
+    },
+    // 强制更新图形
+    updateKonva() {
+      if (this.tr && this.currentEditor) {
+        this.tr.forceUpdate()
+        this.currentEditor.draw()
+      }
     }
   },
   mounted() {
-    const { width, height } = this.getCanvasElSize()
-    this.stage = new Konva.Stage({
-      container: 'page-canvas',
-      width: width,
-      height: height
-    })
+    this.initKonva()
     setTimeout(() => {
       this.createRect()
-      console.log(this.stage);
+      this.createRect()
     }, 100)
   }
 }
@@ -254,6 +383,9 @@ export default {
     color: #333;
     font-weight: 600;
   }
+  .page-canvas__layer > dl > dd > button{
+    margin-left: 5px;
+  }
   .page-wrap > .page-container > .page-canvas__container{
     width: calc(100% - 560px);
     height: 100%;
@@ -264,6 +396,12 @@ export default {
   .page-canvas__property >>> .el-input > .el-input__inner{
     padding: 0 5px;
     text-align: center;
+  }
+  .page-canvas__property >>>.el-descriptions .canvas-property__item,
+  .page-canvas__property >>>.el-color-picker,
+  .page-canvas__property >>>.el-color-picker > .el-color-picker__trigger{
+    width: 100%;
+    height: 28px;
   }
   .canvas-property__item p {
     margin: 0;

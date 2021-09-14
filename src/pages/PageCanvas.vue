@@ -43,22 +43,22 @@
         <template v-if="editFlag">
           <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="基本">
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.x" @change="updateKonva">
+              <el-input size="mini" v-model="currentEditor.attrs.x" @input="updateKonva">
                 <template slot="append">X</template>
               </el-input>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.y" @change="updateKonva">
+              <el-input size="mini" v-model="currentEditor.attrs.y" @input="updateKonva">
                 <template slot="append">Y</template>
               </el-input>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.width" @change="updateKonva">
+              <el-input size="mini" v-model="currentEditor.attrs.width" @input="updateKonva">
                 <template slot="append">W</template>
               </el-input>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.height" @change="updateKonva">
+              <el-input size="mini" v-model="currentEditor.attrs.height" @input="updateKonva">
                 <template slot="append">H</template>
               </el-input>
             </el-descriptions-item>
@@ -69,7 +69,7 @@
               <p>颜色</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.fill" @change="updateKonva">
+              <el-input size="mini" v-model="currentEditor.attrs.fill" @input="updateKonva">
               </el-input>
               <p>Hex</p>
             </el-descriptions-item>
@@ -80,7 +80,7 @@
               <p>颜色</p>
               </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.strokeWidth" @change="updateKonva"/>
+              <el-input size="mini" v-model="currentEditor.attrs.strokeWidth" @input="updateKonva"/>
               <p>宽度</p>
             </el-descriptions-item>
           </el-descriptions>
@@ -90,15 +90,15 @@
               <p>颜色</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetX" @change="updateKonva" />
+              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetX" @input="updateKonva" />
               <p>X</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetY" @change="updateKonva" />
+              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetY" @input="updateKonva" />
               <p>Y</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini"  v-model="currentEditor.attrs.shadowBlur" @change="updateKonva" />
+              <el-input size="mini"  v-model="currentEditor.attrs.shadowBlur" @input="updateKonva" />
               <p>模糊</p>
             </el-descriptions-item>
           </el-descriptions>
@@ -229,6 +229,12 @@ export default {
       })
       this.layer.add(this.tr)
       this.tr.nodes([shape])
+      shape.on('transform',() => {
+        shape.width(Math.max(5, shape.width() * shape.scaleX()))
+        shape.height(Math.max(5, shape.height() * shape.scaleY()))
+        shape.scaleX(1)
+        shape.scaleY(1)
+      })
       // this.layer.draw()
     },
     // 清除编辑状态
@@ -239,6 +245,7 @@ export default {
       }
       if (this.editFlag) {
         this.currentEditor.draggable(false)
+        this.currentEditor.off('transform')
         this.currentEditor = null
         this.editFlag = false
       }

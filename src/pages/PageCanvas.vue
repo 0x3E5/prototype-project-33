@@ -42,25 +42,67 @@
       <!-- canvas 舞台结束 -->
       <!-- 属性开始 -->
       <div class="page-canvas__property">
-        <el-descriptions column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="基本">
-          <el-descriptions-item>X</el-descriptions-item>
-          <el-descriptions-item>Y</el-descriptions-item>
-          <el-descriptions-item>W</el-descriptions-item>
-          <el-descriptions-item>H</el-descriptions-item>
+        <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="基本">
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456">
+              <template slot="append">X</template>
+            </el-input>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456">
+              <template slot="append">Y</template>
+            </el-input>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456">
+              <template slot="append">W</template>
+            </el-input>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456">
+              <template slot="append">H</template>
+            </el-input>
+          </el-descriptions-item>
         </el-descriptions>
-        <el-descriptions column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="背景色">
-          <el-descriptions-item>颜色</el-descriptions-item>
-          <el-descriptions-item>HEX</el-descriptions-item>
+        <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="背景色">
+          <el-descriptions-item>
+            <el-color-picker size="small" color-format="hex"></el-color-picker>
+            <p>颜色</p>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456">
+              <template slot="prepend">#</template>
+            </el-input>
+            <p>Hex</p>
+          </el-descriptions-item>
         </el-descriptions>
-        <el-descriptions column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="边框">
-          <el-descriptions-item>颜色</el-descriptions-item>
-          <el-descriptions-item>宽度</el-descriptions-item>
+        <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="边框">
+          <el-descriptions-item>
+            <el-color-picker size="small" color-format="rgb" show-alpha></el-color-picker>
+            <p>颜色</p>
+            </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456" />
+            <p>宽度</p>
+          </el-descriptions-item>
         </el-descriptions>
-        <el-descriptions column="4" size="medium" contentClassName="canvas-property__item" :colon="false" title="阴影">
-          <el-descriptions-item>颜色</el-descriptions-item>
-          <el-descriptions-item>X</el-descriptions-item>
-          <el-descriptions-item>Y</el-descriptions-item>
-          <el-descriptions-item>模糊</el-descriptions-item>
+        <el-descriptions :column="4" size="medium" contentClassName="canvas-property__item" :colon="false" title="阴影">
+          <el-descriptions-item>
+            <el-color-picker size="small" color-format="rgb" show-alpha></el-color-picker>
+            <p>颜色</p>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456" />
+            <p>X</p>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456" />
+            <p>Y</p>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <el-input size="mini" :value="123456" />
+            <p>模糊</p>
+          </el-descriptions-item>
         </el-descriptions>
       </div>
       <!-- 属性结束 -->
@@ -160,6 +202,7 @@ export default {
     width: 100%;
     height: 100%;
   }
+  /* 工具条样式 */
   .page-wrap > .page-toolbar{
     width: 100%;
     height: 32px;
@@ -182,6 +225,7 @@ export default {
     height: calc(100% - 32px);
     display: flex;
   }
+  /* 左侧图层样式 */
   .page-wrap > .page-container > .page-canvas__layer,
   .page-wrap > .page-container > .page-canvas__property{
     width: 280px;
@@ -191,6 +235,7 @@ export default {
     box-sizing: border-box;
     padding: 10px;
   }
+  
   .page-container > .page-canvas__layer > dl{
     user-select: none;
     overflow: auto;
@@ -214,5 +259,15 @@ export default {
     height: 100%;
     background: #E5E5E5;
     overflow: hidden;
+  }
+  /* 右侧属性样式 */
+  .page-canvas__property >>> .el-input > .el-input__inner{
+    padding: 0 5px;
+    text-align: center;
+  }
+  .canvas-property__item p {
+    margin: 0;
+    text-align: center;
+    font-size: 12px;
   }
 </style>

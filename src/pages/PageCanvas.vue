@@ -371,8 +371,8 @@ export default {
         x: stage.width() / 2,
         y: stage.height() / 2,
         numPoints: 5,
-        innerRadius: 40,
-        outerRadius: 70,
+        innerRadius: 20,
+        outerRadius: 60,
         fill: '#ffff00',
         stroke: '#000000',
         strokeWidth: 1

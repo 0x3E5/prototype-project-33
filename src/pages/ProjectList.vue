@@ -18,27 +18,7 @@
       <!-- 操作按钮结束 -->
       <!-- 卡片列表开始 -->
       <main>
-        <el-card class="card-item" v-for="item in cardList" :key="item.id">
-          <div class="card-item__button">
-            <el-dropdown @command="cardHandler">
-              <span class="card-item__dropdown">.<br />.<br />.</span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="'edit,'+ item.id">编辑项目</el-dropdown-item>
-                <el-dropdown-item :command="'delete,'+ item.id">删除项目</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </div>
-          <el-image class="card-item__image" :src="item.image">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-          <!-- <img :src="item.image" class="card-item__image"> -->
-          <div class="card-item__content">
-            <p><span class="card-item__title">{{ item.name }}</span><time class="card-item__time">{{ item.date }}</time></p>
-            <p class="card-item__desc" v-html="item.desc"></p>
-          </div>
-        </el-card>
+        <ProjectListCard v-for="item in cardList" :key="item.id" :value="item" @edit="editProject" @delete="deleteProject" />
         <el-empty v-if="cardList.length <= 0" style="width:100%;height:100%;" :image-size="200"></el-empty>
       </main>
       <!-- 卡片列表结束 -->
@@ -59,8 +39,12 @@
 </template>
 
 <script>
+import ProjectListCard from '@/components/ProjectListCard'
 export default {
   name: 'ProjectList',
+  components: {
+    ProjectListCard
+  },
   data() {
     return {
       page: {
@@ -155,26 +139,6 @@ export default {
     createProject() {
       console.log('创建项目')
     },
-    // 编辑项目
-    editProject(id) {
-      console.log('编辑项目', id)
-    },
-    // 删除项目
-    deleteProject(id) {
-      this.$confirm('确定要对该项目进行删除操作吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        console.log('删除项目', id)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        return
-      })
-    },
     // 改变排序方式
     changeSort(val) {
       if (val === 'asc') {
@@ -188,14 +152,17 @@ export default {
         console.log('按名称查询')
       }
     },
-    // 卡片操作
-    cardHandler(val) {
-      const flag = val.split(',')
-      if (flag[0] === 'edit') {
-        this.editProject(flag[1])
-      } else if (flag[0] === 'delete') {
-        this.deleteProject(flag[1])
-      }
+    // 编辑项目
+    editProject(id) {
+      console.log('编辑项目', id)
+    },
+    // 删除项目
+    deleteProject(id) {
+      this.$message({
+        type: 'success',
+        message: '删除成功!'
+      })
+      console.log('删除项目', id)
     },
     // 分页切换
     pageChange(val) {
@@ -235,81 +202,7 @@ export default {
     flex: auto;
   }
   /* 卡片样式 */
-  .el-main > main > .card-item{
-    width: 18%;
-    height: 32%;
-    margin-bottom: 2%;
-  }
-  main > .card-item >>> .el-card__body{
-    height: 100%;
-    padding: 0;
-    position: relative;
-  }
-  main > .card-item >>> .el-card__body:hover .card-item__button{
-    display: block;
-  }
-  .card-item >>> .el-card__body .card-item__button {
-    display: none;
-    user-select: none;
-    cursor: pointer;
-    position: absolute;
-    top: 5px;
-    right: 3px;
-    height: 20px;
-    width: 16px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 2px;
-    line-height: 5px;
-    font-weight: 700;
-    z-index: 2;
-  }
-  .card-item >>> .el-card__body .card-item__dropdown{
-    display: inline-block;
-    height: 20px;
-    width: 16px;
-  }
-  .card-item >>> .el-card__body > .card-item__image{
-    width: 100%;
-    height: 70%;
-    border-bottom: 1px solid #eee;
-  }
-  .card-item >>> .el-card__body .image-slot{
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 50px;
-    color: #ccc;
-  }
-  .card-item >>> .el-card__body > .card-item__content{
-    padding: 5px;
-  }
-  .card-item >>> .el-card__body > .card-item__content > p {
-    margin: 0;
-  }
-  .card-item >>> .el-card__body > .card-item__content > p:first-of-type {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  .card-item >>> .el-card__body .card-item__title{
-    font-size: 16px;
-    font-weight: 500;
-  }
-  .card-item >>> .el-card__body .card-item__time{
-    font-size: 14px;
-  }
-  .card-item >>> .el-card__body  .card-item__desc{
-    text-align: left;
-    font-size: 14px;
-    color: #999;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-  }
+  /* .el-main > main >  */
   /* 底部样式 */
   .project-list-wrap > .el-main > footer{
     margin-top: 8px;

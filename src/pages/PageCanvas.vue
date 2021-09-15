@@ -43,22 +43,22 @@
         <template v-if="editFlag">
           <el-descriptions :column="2" size="medium" contentClassName="canvas-property__item" :colon="false" title="基本">
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.x" @input="updateKonva">
+              <el-input type="number" size="mini" v-model="currentEditor.attrs.x" @input="updateKonva">
                 <template slot="append">X</template>
               </el-input>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.y" @input="updateKonva">
+              <el-input type="number" size="mini" v-model="currentEditor.attrs.y" @input="updateKonva">
                 <template slot="append">Y</template>
               </el-input>
             </el-descriptions-item>
-            <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.width" @input="updateKonva">
+            <el-descriptions-item v-if="currentEditor.attrs.width">
+              <el-input type="number" size="mini" v-model="currentEditor.attrs.width" @input="updateKonva">
                 <template slot="append">W</template>
               </el-input>
             </el-descriptions-item>
-            <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.height" @input="updateKonva">
+            <el-descriptions-item v-if="currentEditor.attrs.height">
+              <el-input type="number" size="mini" v-model="currentEditor.attrs.height" @input="updateKonva">
                 <template slot="append">H</template>
               </el-input>
             </el-descriptions-item>
@@ -80,7 +80,7 @@
               <p>颜色</p>
               </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini" v-model="currentEditor.attrs.strokeWidth" @input="updateKonva"/>
+              <el-input type="number" size="mini" v-model="currentEditor.attrs.strokeWidth" @input="updateKonva"/>
               <p>宽度</p>
             </el-descriptions-item>
           </el-descriptions>
@@ -90,15 +90,15 @@
               <p>颜色</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetX" @input="updateKonva" />
+              <el-input type="number" size="mini"  v-model="currentEditor.attrs.shadowOffsetX" @input="updateKonva" />
               <p>X</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini"  v-model="currentEditor.attrs.shadowOffsetY" @input="updateKonva" />
+              <el-input type="number" size="mini"  v-model="currentEditor.attrs.shadowOffsetY" @input="updateKonva" />
               <p>Y</p>
             </el-descriptions-item>
             <el-descriptions-item>
-              <el-input size="mini"  v-model="currentEditor.attrs.shadowBlur" @input="updateKonva" />
+              <el-input type="number" size="mini"  v-model="currentEditor.attrs.shadowBlur" @input="updateKonva" />
               <p>模糊</p>
             </el-descriptions-item>
           </el-descriptions>
@@ -160,17 +160,22 @@ export default {
           break;
         case 'circle':
           console.log('插入圆形');
+          this.createCircle()
           break;
         case 'triangle':
           console.log('插入三角形');
+          this.createTriangle()
           break;
         case 'star':
+          this.createStar() 
           console.log('插入星形');
           break;
         case 'image':
+          this.createImage()
           console.log('插入图片');
           break;
         case 'text':
+          this.createText()
           console.log('插入文字');
           break;
       }
@@ -294,8 +299,8 @@ export default {
       const rect = new Konva.Rect({
         id: String(new Date().getTime()),
         name: '矩形',
-        x: this.stage.width() / 2,
-        y: this.stage.height() / 2,
+        x: this.stage.width() / 2 - 50,
+        y: this.stage.height() / 2 -25,
         width: 100,
         height: 50,
         fill: '#fff',
@@ -307,19 +312,160 @@ export default {
         shadowColor: 'rgba(0,0,0,0.3)'
       })
       rect.on('mouseenter', () => {
-        stage.container().style.cursor = 'pointer';
+        this.stage.container().style.cursor = 'pointer';
       });
 
       rect.on('mouseleave', () => {
-        stage.container().style.cursor = 'default';
+        this.stage.container().style.cursor = 'default';
       });
       this.layer.add(rect).draw()
+    },
+    // 绘制圆形
+    createCircle() {
+      const circle = new Konva.Circle({
+        id: String(new Date().getTime()),
+        name: '圆形',
+        x: this.stage.width() / 2,
+        y: this.stage.height() / 2,
+        radius: 70,
+        fill: '#ff0000',
+        stroke: '#000',
+        strokeWidth: 1
+      });
+      circle.on('mouseenter', () => {
+        this.stage.container().style.cursor = 'pointer';
+      });
+
+      circle.on('mouseleave', () => {
+        this.stage.container().style.cursor = 'default';
+      });
+      this.layer.add(circle);
+    },
+    // 绘制三角形
+    createTriangle() {
+      const triangle = new Konva.Line({
+        id: String(new Date().getTime()),
+        name: '三角形',
+        x:0,
+        y:0,
+        points: [this.stage.width() / 2, this.stage.height() / 2, this.stage.width() / 2 -50, this.stage.height() / 2 + 50, this.stage.width() / 2 + 50, this.stage.height() / 2 + 50],
+        fill: '#ff0000',
+        stroke: '#000',
+        strokeWidth: 1,
+        closed: true
+      });
+      triangle.on('mouseenter', () => {
+        this.stage.container().style.cursor = 'pointer';
+      });
+
+      triangle.on('mouseleave', () => {
+        this.stage.container().style.cursor = 'default';
+      });
+      this.layer.add(triangle);
+    },
+    // 绘制星形
+    createStar() {
+      const star = new Konva.Star({
+        id: String(new Date().getTime()),
+        name: '星形',
+        x: stage.width() / 2,
+        y: stage.height() / 2,
+        numPoints: 5,
+        innerRadius: 40,
+        outerRadius: 70,
+        fill: '#ffff00',
+        stroke: '#000000',
+        strokeWidth: 1
+      });
+      star.on('mouseenter', () => {
+        this.stage.container().style.cursor = 'pointer';
+      });
+
+      star.on('mouseleave', () => {
+        this.stage.container().style.cursor = 'default';
+      });
+      this.layer.add(star);
+    },
+    // 绘制图片
+    createImage() {
+      this.$confirm('<input type="file" />', '请选择图片', {
+        dangerouslyUseHTMLString: true,
+        distinguishCancelAndClose: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        if (value.length <= 0) {
+          this.$message({
+            type: 'warning',
+            message: '文本内容不能为空！'
+          })
+          return
+        } else {
+          const triangle = new Konva.Text({
+            id: String(new Date().getTime()),
+            name: '文本',
+            x:this.stage.width() / 2,
+            y:this.stage.height() / 2,
+            text: value,
+            fill: '#ff0000',
+            stroke: '#000',
+            strokeWidth: 0,
+            fontSize: 30,
+            fontFamily: 'Calibri'
+          });
+          triangle.on('mouseenter', () => {
+            this.stage.container().style.cursor = 'pointer';
+          });
+
+          triangle.on('mouseleave', () => {
+            this.stage.container().style.cursor = 'default';
+          });
+          this.layer.add(triangle);
+        }
+      }).catch(() => {})
+    },
+    // 绘制文字
+    createText() {
+      this.$prompt('请输入文本内容', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        if (value.length <= 0) {
+          this.$message({
+            type: 'warning',
+            message: '文本内容不能为空！'
+          })
+          return
+        } else {
+          const triangle = new Konva.Text({
+            id: String(new Date().getTime()),
+            name: '文本',
+            x:this.stage.width() / 2,
+            y:this.stage.height() / 2,
+            text: value,
+            fill: '#ff0000',
+            stroke: '#000',
+            strokeWidth: 0,
+            fontSize: 30,
+            fontFamily: 'Calibri'
+          });
+          triangle.on('mouseenter', () => {
+            this.stage.container().style.cursor = 'pointer';
+          });
+
+          triangle.on('mouseleave', () => {
+            this.stage.container().style.cursor = 'default';
+          });
+          this.layer.add(triangle);
+        }
+      }).catch(() => {})
     },
     // 强制更新图形
     updateKonva() {
       if (this.tr && this.currentEditor) {
+        console.log(1);
         this.tr.forceUpdate()
-        this.currentEditor.draw()
+        this.stage.draw()
       }
     }
   },

@@ -18,7 +18,7 @@
       <!-- 操作按钮结束 -->
       <!-- 卡片列表开始 -->
       <main>
-        <ProjectListCard v-for="item in cardList" :key="item.id" :value="item" @edit="editProject" @delete="deleteProject" />
+        <ProjectListCard v-for="item in cardList" :key="item.projectId" :value="item" @edit="editProject" @delete="deleteProject" />
         <el-empty v-if="cardList.length <= 0" style="width:100%;height:100%;" :image-size="200"></el-empty>
       </main>
       <!-- 卡片列表结束 -->
@@ -28,147 +28,185 @@
           @current-change="pageChange"
           background
           layout="prev, pager, next"
-          :current-page.sync="page.current"
-          :page-size="page.size"
+          :current-page.sync="page.pageNum"
+          :page-size="page.pageSize"
           :total="total">
         </el-pagination>
       </footer>
       <!-- 分页结束 -->
     </el-main>
+    <ProjectListCardModal :title="title" :form="form" :visible.sync="isShow" @submit="handleSubmit" />
   </el-container>
 </template>
 
 <script>
 import ProjectListCard from '@/components/ProjectListCard'
+import ProjectListCardModal from '@/components/ProjectListCardModal'
+import { getList, save, update, getOne, del } from '@/request/project.js'
 export default {
   name: 'ProjectList',
   components: {
-    ProjectListCard
+    ProjectListCard,
+    ProjectListCardModal
   },
   data() {
     return {
+      isShow: false,
       page: {
-        current: 1,
-        size: 15
+        pageNum: 1,
+        pageSize: 15,
+        isAsc: 'asc',
+        orderByColumn: 'createTime'
       },
-      total: 20,
+      total: 0,
       sortText: '按时间正序',
-      cardList: [
-        {
-          id:1,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:2,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:3,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:4,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:5,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:6,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:7,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:8,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:9,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:10,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-        {
-          id:11,
-          image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          name: '项目1',
-          date: '2021-01-01 00:00',
-          desc: '项目1很长很长很长很长很长的描述描述......'
-        },
-      ]
+      cardList: [],
+      title: '添加项目',
+      form: {
+        projectTitle: '',
+        projectContent: '',
+        projectImg: ''
+      }
     }
   },
   methods: {
+    // 获取项目列表
+    fetchList() {
+      // console.log(this.page);
+      getList(this.page)
+      .then(res => {
+        // console.log(res);
+        const { status, data, msg } = res
+        if (status === 10000) {
+          this.cardList = data.rows
+          this.total = data.total
+        } else {
+          this.cardList = []
+          this.total = 0
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
     // 创建项目
     createProject() {
-      console.log('创建项目')
+      // console.log('创建项目')
+      this.title = '添加项目'
+      this.form = {
+        projectId: '',
+        projectTitle: '',
+        projectContent: '',
+        projectImg: ''
+      }
+      this.isShow = true
     },
     // 改变排序方式
     changeSort(val) {
       if (val === 'asc') {
         this.sortText = '按时间正序'
+        this.page = {
+          pageNum: 1,
+          pageSize: 15,
+          isAsc: 'asc',
+          orderByColumn: 'createTime'
+        }
         console.log('按时间正序查询')
       } else if (val === 'desc') {
         this.sortText = '按时间倒叙'
+        this.page = {
+          pageNum: 1,
+          pageSize: 15,
+          isAsc: 'desc',
+          orderByColumn: 'createTime'
+        }
         console.log('按时间倒叙查询')
       } else if (val === 'name') {
         this.sortText = '按名称排序'
+        this.page = {
+          pageNum: 1,
+          pageSize: 15,
+          isAsc: 'asc',
+          orderByColumn: 'projectTitle'
+        }
         console.log('按名称查询')
       }
+      this.fetchList()
     },
     // 编辑项目
     editProject(id) {
-      console.log('编辑项目', id)
+      this.title = '编辑项目'
+      // console.log('编辑项目', id)
+      getOne(id)
+      .then(res => {
+        const { status, msg, data } =res
+        if (status === 10000){
+          this.form = data
+          this.isShow = true
+        }
+      })
+      .catch(err => {
+        this.$message.error(err);
+      })
     },
     // 删除项目
     deleteProject(id) {
-      this.$message({
-        type: 'success',
-        message: '删除成功!'
+      del(id).then(res => {
+        const { status, data, msg } = res
+        if (status === 10000) {
+          this.$message({
+            type: 'success',
+            message: msg
+          })
+          this.fetchList()
+        }
       })
-      console.log('删除项目', id)
+      .catch(err => {
+        this.$message.error(err)
+      })
+     
+      // console.log('删除项目', id)
     },
     // 分页切换
     pageChange(val) {
-      console.log('切换分页了')
-      console.log(this.page)
+      // console.log('切换分页了')
+      // console.log(this.page)
+      this.fetchList()
+    },
+    // 弹框提交
+    handleSubmit() {
+      // console.log(this.form);
+      if (!!this.form.projectId) {
+        update(this.form)
+        .then(res => {
+          const { status, msg, data } = res
+          if(status === 10000) {
+            this.$message.success(msg)
+            this.fetchList()
+            this.isShow = false
+          }
+        })
+        .catch(err => {
+          this.$message.error(err)
+        })
+      } else {
+        save(this.form)
+        .then(res => {
+          const { status, msg, data } = res
+          if (status === 10000) {
+            this.$message.success(msg)
+            this.fetchList()
+            this.isShow = false
+          }
+        })
+        .catch(err => {
+          this.$message.error(err)
+        })
+      }
     }
+  },
+  mounted() {
+    this.fetchList()
   }
 }
 </script>

@@ -2,16 +2,26 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 
-export const reqInstance = axios.create({
+const reqInstance = axios.create({
     // 后端接口
-    baseURL: 'http://127.0.0.1:3000/api',
+    // baseURL: '/api',
+    baseURL: '/index',
     timeout: 10000,
 });
 
-reqInstance.interceptors.response.use(function (response) {
+reqInstance.interceptors.request.use(config => {
+    return config
+}, err => {
+    console.log(err);
+})
+
+reqInstance.interceptors.response.use(response => {
     if (response.status === 200) {
         return response.data;
     }
-}, function (error) {
+    return response
+}, error => {
     Message.error(error.message);
 });
+
+export default reqInstance

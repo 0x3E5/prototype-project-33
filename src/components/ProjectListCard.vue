@@ -4,20 +4,20 @@
       <el-dropdown @command="cardHandler">
         <span class="card-item__dropdown">.<br />.<br />.</span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item :command="'edit,'+ value.id">编辑项目</el-dropdown-item>
-          <el-dropdown-item :command="'delete,'+ value.id">删除项目</el-dropdown-item>
+          <el-dropdown-item :command="'edit,'+ value.projectId">编辑项目</el-dropdown-item>
+          <el-dropdown-item :command="'delete,'+ value.projectId">删除项目</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <el-image class="card-item__image" :src="value.image">
+    <el-image class="card-item__image" :src="value.projectImg">
       <div slot="error" class="image-slot">
         <i class="el-icon-picture-outline"></i>
       </div>
     </el-image>
     <!-- <img :src="value.image" class="card-item__image"> -->
     <div class="card-item__content">
-      <p><span class="card-item__title">{{ value.name }}</span><time class="card-item__time">{{ value.date }}</time></p>
-      <p class="card-item__desc" v-html="value.desc"></p>
+      <p><span class="card-item__title">{{ value.projectTitle }}</span><time class="card-item__time">{{ value.createTime | fmtDate }}</time></p>
+      <p class="card-item__desc" v-html="value.projectContent"></p>
     </div>
   </el-card>
 </template>
@@ -29,11 +29,11 @@ export default {
     value:{
       type: Object,
       default: () => ({
-        id:1,
-        image: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        name: '项目1',
-        date: '2021-01-01 00:00',
-        desc: '项目1很长很长很长很长很长的描述描述......'
+        projectId:1,
+        projectImg: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
+        projectTitle: '项目1',
+        createTime: '2021-01-01 00:00',
+        projectContent: '项目1很长很长很长很长很长的描述描述......'
       })
     }
   },
@@ -55,6 +55,18 @@ export default {
         })
         
       }
+    }
+  },
+  filters: {
+    fmtDate(val) {
+      let date = new Date(val)
+      const year = date.getFullYear()
+      const month = date.getMonth() +1
+      const day = date.getDate()
+      const hour = date.getHours()
+      const minute = date.getMinutes()
+      const second = date.getSeconds()
+      return `${year}-${month}-${day} ${hour}:${minute}:${second}`
     }
   }
 }
@@ -90,6 +102,7 @@ export default {
     z-index: 2;
   }
   .card-item >>> .el-card__body .card-item__dropdown{
+    text-align: center;
     display: inline-block;
     height: 20px;
     width: 16px;

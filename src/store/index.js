@@ -1,6 +1,14 @@
+/*
+ * @Author: 0x3E5
+ * @Date: 2021-09-14 08:59:01
+ * @LastEditTime: 2021-09-23 15:59:19
+ * @LastEditors: 0x3E5
+ * @Description: 
+ * @FilePath: \prototype-project-33\src\store\index.js
+ */
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {reqInstance} from '../request/config';
+import reqInstance from '../request/config';
 
 Vue.use(Vuex)
 

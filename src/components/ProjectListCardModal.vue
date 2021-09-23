@@ -14,7 +14,7 @@
       <el-form-item>
         <el-upload
           class="upload-demo"
-          action="/api/upload"
+          action="/upload"
           :on-remove="handleRemove"
           :on-success="handleUploadSuccess"
           :on-error="handleError"
@@ -62,13 +62,12 @@ export default{
   watch: {
     visible(val) {
       this.dialogVisible = val
+      if(!!this.form.projectImg) {
+        this.fileList = [{ name: this.form.projectImg, url: this.form.projectImg }]
+      } else {
+        this.fileList = []
+      }
     },
-    form: {
-      handler(val) {
-        this.fileList = [{ name: val.projectImg, url: val.projectImg }]
-      },
-      deep: true
-    }
   },
   methods: {
     handleClose(done) {

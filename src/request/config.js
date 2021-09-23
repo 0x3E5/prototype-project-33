@@ -5,7 +5,7 @@ import { Message } from 'element-ui';
 const reqInstance = axios.create({
     // 后端接口
     // baseURL: '/api',
-    baseURL: '/index',
+    baseURL: '/',
     timeout: 10000,
 });
 
